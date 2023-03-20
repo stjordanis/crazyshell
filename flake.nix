@@ -31,35 +31,36 @@
     let
       mkCrazyShell = import ./mkCrazyShell.nix;
     in
-    flake-utils.lib.eachSystem [ "x86_64-linux" "x86_64-darwin" ] (system:
-    let
+    flake-utils.lib.eachSystem [ "x86_64-linux" "x86_64-darwin" ]
+      (system:
+      let
 
-      pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { inherit system; };
 
-      haskellPackages = horizon-platform.legacyPackages.${system};
+        haskellPackages = horizon-platform.legacyPackages.${system};
 
-      defaultCrazyShell = mkCrazyShell { inherit pkgs haskellPackages; };
+        defaultCrazyShell = mkCrazyShell { inherit pkgs haskellPackages; };
 
-    in
-    {
+      in
+      {
 
-      apps = {
+        apps = {
 
-        default = {
-          program = "${defaultCrazyShell}/bin/crazy-shell";
-          type = "app";
+          default = {
+            program = "${defaultCrazyShell}/bin/crazy-shell";
+            type = "app";
+          };
+
         };
 
-      };
+        checks =
+          with lint-utils.outputs.linters.${system}; {
+            dhall-format = dhall-format { src = self; };
+            nixpkgs-fmt = nixpkgs-fmt { src = self; };
+            stylish-haskell = stylish-haskell { src = self; };
+          };
 
-      checks =
-        with lint-utils.outputs.linters.${system}; {
-          dhall-format = dhall-format { src = self; };
-          nixpkgs-fmt = nixpkgs-fmt { src = self; };
-          stylish-haskell = stylish-haskell { src = self; };
-        };
+        packages.default = defaultCrazyShell;
 
-      packages.default = defaultCrazyShell;
-
-    }) // { lib = { inherit mkCrazyShell; }; };
+      }) // { lib = { inherit mkCrazyShell; }; };
 }
