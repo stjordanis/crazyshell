@@ -7,7 +7,7 @@ Crazy Shell is a nix function that creates a haskell shell.
 To run from this repository.
 
 ```
-nix run 'git+https://gitlab.homotopic.tech/crazy-shell/crazy-shell'
+nix run 'git+https://gitlab.horizon-haskell.net/shells/crazyshell'
 ```
 
 ## Customising
