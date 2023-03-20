@@ -17,3 +17,8 @@ and prompt: See some of the examples:
 
 * [horizon-shell](https://gitlab.horizon-haskell.net/shells/horizon-shell)
 * [biohaskell-shell](https://gitlab.horizon-haskell.net/shells/biohaskell-shell)
+
+## Credit
+
+* Crazy Shell is based on the blog [Using Haskell as my
+shell](https://las.rs/blog/haskell-as-shell.html) by Las Safin.
