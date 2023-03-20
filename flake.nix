@@ -1,7 +1,6 @@
 {
 
-
-  description = "horizon-shell";
+  description = "Crazy Shell";
 
   nixConfig = {
     extra-substituters = "https://horizon.cachix.org";
@@ -18,6 +17,7 @@
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
+
   outputs =
     inputs@
     { self
@@ -28,28 +28,26 @@
     , nixpkgs
     , ...
     }:
-    flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
     let
-      pkgs = import nixpkgs { inherit system; };
+      mkCrazyShell = import ./mkCrazyShell.nix;
     in
-    with pkgs.haskell.lib;
-    with pkgs.writers;
-    with pkgs.lib;
+    flake-utils.lib.eachSystem [ "x86_64-linux" "x86_64-darwin" ] (system:
     let
 
-      horizon-shell = import ./default.nix {
-        haskellPackages = horizon-platform.legacyPackages.${system};
-        inherit (pkgs) runCommand writeShellScriptBin;
-        inherit (pkgs.lib) splitString;
-      };
+      pkgs = import nixpkgs { inherit system; };
+
+      haskellPackages = horizon-platform.legacyPackages.${system};
+
+      defaultCrazyShell = mkCrazyShell { inherit pkgs haskellPackages; };
+
     in
     {
 
       apps = {
 
         default = {
+          program = "${defaultCrazyShell}/bin/crazy-shell";
           type = "app";
-          program = "${horizon-shell}/bin/horizon-shell";
         };
 
       };
@@ -61,7 +59,7 @@
           stylish-haskell = stylish-haskell { src = self; };
         };
 
-      packages.default = horizon-shell;
+      packages.default = defaultCrazyShell;
 
-    });
+    }) // { lib = { inherit mkCrazyShell; }; };
 }
